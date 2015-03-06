@@ -5,8 +5,12 @@ Connect with a friend of yours and play tic tac toe online
 Usage
 =====
 
+`npm install paulbarbu/ttt`
+`pm2 start node_modules/ttt/bin/tt.json`
 
-`NODE_ENV=production DEBUG=express:* npm start`
+OR
+
+`DEBUG=express:* npm start` in the project's directory
 
 
 License (BSD3)
