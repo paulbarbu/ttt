@@ -1,0 +1,12 @@
+{
+  "apps" : [{
+    "name"        : "ttt",
+    "script"      : "bin/www",
+    "log_date_format"  : "YYYY-MM-DD HH:mm Z",
+    "ignore_watch" : ["[\\/\\\\]\\./", "node_modules"],
+    "watch"       : true,
+    "env": {
+        "NODE_ENV": "production"
+    }
+  }]
+}
