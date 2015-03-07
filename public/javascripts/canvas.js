@@ -20,7 +20,28 @@ Board.prototype.isBoardClick = function(x, y)
     }
 
     return false;
-};
+}
+
+//x, y, relative to the board origin
+Board.prototype.coordToCell = function(x, y)
+{
+    var row, col;
+
+    for(i=1; i<=3; ++i)
+    {
+        if((i-1)*this.cellW <= x && x <= i*this.cellW)
+        {
+            col = i;
+        }
+
+        if((i-1)*this.cellH <= y && y <= i*this.cellH)
+        {
+            row = i;
+        }
+    }
+
+    return [row-1, col-1];
+}
 
 Board.prototype.canvasClicked = function(event)
 {
@@ -30,9 +51,23 @@ Board.prototype.canvasClicked = function(event)
 
     if(this.isBoardClick(x, y))
     {
-        console.log("In board!");
+        var boardX = x-this.paddingW,
+            boardY = y-this.paddingH;
+        console.log("Board: X: " + boardX +" Y: " + boardY);
+
+        var rc = this.coordToCell(boardX, boardY);
+        var row = rc[0],
+            col = rc[1];
+        console.log("Row: " + row + " Col: " + col);
+
+        var ctx = this.canvas.getContext('2d');
+        ctx.save();
+        ctx.translate(col*this.cellW + this.paddingW, row*this.cellH + this.paddingH);
+        var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+        x.draw(this.cellW/10, this.cellH/10);
+        ctx.restore();
     }
-};
+}
 
 Board.prototype.drawBoard = function (img)
 {
@@ -84,7 +119,7 @@ Board.prototype.drawBoard = function (img)
         ctx.stroke();
         ctx.restore();
     }
-};
+}
 
 Board.prototype.init = function()
 {
@@ -104,7 +139,7 @@ Board.prototype.init = function()
         this.drawBoard(img);
         this.canvas.addEventListener('click', this.canvasClicked.bind(this));
     }.bind(this);
-};
+}
 
 function main()
 {
