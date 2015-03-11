@@ -10,6 +10,7 @@ function Board(canvas)
     this.boardH = null;
     this.cellW = null;
     this.cellH = null;
+    this.refDimension = 0;
 }
 
 Board.prototype.isBoardClick = function(x, y)
@@ -63,8 +64,19 @@ Board.prototype.canvasClicked = function(event)
         var ctx = this.canvas.getContext('2d');
         ctx.save();
         ctx.translate(col*this.cellW + this.paddingW, row*this.cellH + this.paddingH);
-        var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
-        x.draw(this.cellW/10, this.cellH/10);
+        ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
+
+        if(Math.round(Math.random()))
+        {
+            var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+            x.draw(this.cellW/10, this.cellH/10);
+        }
+        else
+        {
+            var o = new O(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+            o.draw(this.cellW/10, this.cellH/10);
+        }
+
         ctx.restore();
     }
 }
@@ -74,13 +86,15 @@ Board.prototype.drawBoard = function (img)
     var ctx = this.canvas.getContext('2d'),
         bg = ctx.createPattern(img, 'repeat');
 
+    ctx.save();
     ctx.fillStyle = bg;
     ctx.globalAlpha = 0.7;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.globalAlpha = 1;
+    ctx.restore();
 
-    var refDimension = this.canvas.width < this.canvas.height ? this.canvas.width : this.canvas.height;
-    ctx.lineWidth = refDimension * 1/100; // 1% of the smallest dimension
+    ctx.save();
+    this.refDimension = this.canvas.width < this.canvas.height ? this.canvas.width : this.canvas.height;
+    ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
     ctx.lineCap = 'round';
 
     for(i=1; i<=2; ++i)
@@ -119,6 +133,7 @@ Board.prototype.drawBoard = function (img)
         ctx.stroke();
         ctx.restore();
     }
+    ctx.restore();
 }
 
 Board.prototype.init = function()
