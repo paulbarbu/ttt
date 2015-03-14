@@ -56,5 +56,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var GameManager = require('./game/game_manager');
+app.locals.GameManager = GameManager;
 
 module.exports = app;

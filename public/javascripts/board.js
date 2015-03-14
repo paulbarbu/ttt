@@ -1,8 +1,7 @@
-window.onload = main
-
-function Board(canvas)
+function Board(canvas, game)
 {
     this.canvas = canvas;
+    this.game = game;
 
     this.paddingW = null;
     this.paddingH = null;
@@ -61,23 +60,33 @@ Board.prototype.canvasClicked = function(event)
             col = rc[1];
         console.log("Row: " + row + " Col: " + col);
 
-        var ctx = this.canvas.getContext('2d');
-        ctx.save();
-        ctx.translate(col*this.cellW + this.paddingW, row*this.cellH + this.paddingH);
-        ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
-
-        if(Math.round(Math.random()))
+        if(this.game.isValid(row, col))
         {
-            var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
-            x.draw(this.cellW/10, this.cellH/10);
+            var ctx = this.canvas.getContext('2d');
+            ctx.save();
+            ctx.translate(col*this.cellW + this.paddingW, row*this.cellH + this.paddingH);
+            ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
+
+            if(Math.round(Math.random()))
+            {
+                var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+                x.draw(this.cellW/10, this.cellH/10);
+
+            }
+            else
+            {
+                var o = new O(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+                o.draw(this.cellW/10, this.cellH/10);
+            }
+
+            ctx.restore();
+
+            this.game.set(row, col);
         }
         else
         {
-            var o = new O(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
-            o.draw(this.cellW/10, this.cellH/10);
+            console.log("Invalid position!");
         }
-
-        ctx.restore();
     }
 }
 
@@ -154,19 +163,4 @@ Board.prototype.init = function()
         this.drawBoard(img);
         this.canvas.addEventListener('click', this.canvasClicked.bind(this));
     }.bind(this);
-}
-
-function main()
-{
-    var canvas = document.getElementById('board');
-
-    if(canvas.getContext)
-    {
-        var b = new Board(canvas);
-        b.init();
-    }
-    else
-    {
-        console.log("Canvas is not supported!");
-    }
 }
