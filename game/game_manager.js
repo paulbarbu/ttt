@@ -47,9 +47,7 @@ function onMessage(socket, data)
 function onConnection(socket)
 {
     socket.on('message', function(data) { onMessage(socket, data); });
-
-    console.log('connection established');
-    socket.send('connection established');
+    debug('connection established');
 }
 
 function onError(error)
