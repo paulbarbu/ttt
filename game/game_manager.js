@@ -3,6 +3,11 @@ var debug = require('debug')('ttt:GameManager');
 
 var games = [];
 
+function isValidId(id)
+{
+    return id !== null && id >= 0 && id < games.length;
+}
+
 function onMessage(socket, data)
 {
     debug('received: %s', data);
@@ -11,7 +16,7 @@ function onMessage(socket, data)
     switch(msg.action)
     {
         case 'new':
-            var g = new Game(socket);
+            var g = new Game(socket, games.length);
             games.push(g);
 
             var connInfo = {
@@ -23,7 +28,7 @@ function onMessage(socket, data)
             debug('New game, id: ' + (games.length-1));
             break;
         case 'join':
-            if(msg.id !== null && msg.id >= 0 && msg.id < games.length)
+            if(isValidId(msg.id))
             {
                 var g = games[msg.id];
                 if(!g.isFull())
@@ -49,6 +54,15 @@ function onMessage(socket, data)
                     msg: 'Invalid game id: ' + msg.id
                 };
                 socket.send(JSON.stringify(msg));
+            }
+            break;
+        case 'move':
+            if(isValidId(msg.id))
+            {
+                debug('Move: ' + msg);
+
+                var g = games[msg.id];
+                g.move(msg.row, msg.col, msg.player);
             }
             break;
     }

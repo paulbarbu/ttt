@@ -43,9 +43,51 @@ Board.prototype.coordToCell = function(x, y)
     return [row-1, col-1];
 }
 
+Board.prototype.highlight = function(pos, color)
+{
+    var ctx = this.canvas.getContext('2d');
+    ctx.save();
+    ctx.lineWidth = this.refDimension * 2/100; // 1% of the smallest dimension
+
+    switch(pos.p){
+        case 'D':
+            if(pos.n == 1) //first diagonal
+            {
+                ctx.translate(this.paddingW, this.paddingH);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(this.boardW, this.boardH);
+            }
+            else //second diagonal
+            {
+                ctx.translate(this.paddingW + this.boardW, this.paddingH);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-this.boardW, this.boardH);
+            }
+            break;
+        case 'C':
+            ctx.translate(this.paddingW + this.cellW*pos.n + this.cellW/2, this.paddingH);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, this.boardH);
+            break;
+        case 'R':
+            ctx.translate(this.paddingW, this.paddingH + this.cellH*pos.n + this.cellH/2);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(this.boardW, 0);
+            break;
+    }
+
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.restore();
+}
+
 Board.prototype.canvasClicked = function(event)
 {
-    if(!this.game.hasTwoPlayers)
+    if(!this.game.hasTwoPlayers || !this.game.isMyTurn())
     {
         return;
     }
@@ -67,25 +109,7 @@ Board.prototype.canvasClicked = function(event)
 
         if(this.game.isValid(row, col))
         {
-            var ctx = this.canvas.getContext('2d');
-            ctx.save();
-            ctx.translate(col*this.cellW + this.paddingW, row*this.cellH + this.paddingH);
-            ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
-
-            if(Math.round(Math.random()))
-            {
-                var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
-                x.draw(this.cellW/10, this.cellH/10);
-
-            }
-            else
-            {
-                var o = new O(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
-                o.draw(this.cellW/10, this.cellH/10);
-            }
-
-            ctx.restore();
-
+            this.set(row, col);
             this.game.set(row, col);
         }
         else
@@ -93,6 +117,28 @@ Board.prototype.canvasClicked = function(event)
             console.log("Invalid position!");
         }
     }
+}
+
+Board.prototype.set = function(row, col, playerMark)
+{
+    var ctx = this.canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(col*this.cellW + this.paddingW, row*this.cellH + this.paddingH);
+    ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
+
+    var mark = playerMark || this.game.getMark();
+
+    if(mark == 1)
+    {
+        var x = new X(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+        x.draw(this.cellW/10, this.cellH/10);
+    }
+    else
+    {
+        var o = new O(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
+        o.draw(this.cellW/10, this.cellH/10);
+    }
+    ctx.restore();
 }
 
 Board.prototype.drawBoard = function (img)
