@@ -143,6 +143,8 @@ Board.prototype.set = function(row, col, playerMark)
 
 Board.prototype.drawBoard = function (img)
 {
+    this.refDimension = this.canvas.width < this.canvas.height ? this.canvas.width : this.canvas.height;
+
     var ctx = this.canvas.getContext('2d'),
         bg = ctx.createPattern(img, 'repeat');
 
@@ -153,7 +155,6 @@ Board.prototype.drawBoard = function (img)
     ctx.restore();
 
     ctx.save();
-    this.refDimension = this.canvas.width < this.canvas.height ? this.canvas.width : this.canvas.height;
     ctx.lineWidth = this.refDimension * 1/100; // 1% of the smallest dimension
     ctx.lineCap = 'round';
 

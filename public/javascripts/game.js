@@ -76,8 +76,6 @@ Game.prototype.start = function()
 {
     if(this.canvas.getContext)
     {
-        this.b.init();
-
         if(this.id)
         {
             var msg = {
@@ -128,15 +126,32 @@ Game.prototype.onMessage = function(event) {
     switch(msg.type)
     {
         case 'conn-info':
-            this.setStatus('Share this link: ' + window.location + '?join=' + msg['game-id']);
+            var refDimension = document.body.clientWidth < document.body.clientHeight ? document.body.clientWidth : document.body.clientHeight;
+            refDimension *= 40/100;
+            var link = window.location + '?join=' + msg['game-id'];
+            var qrcode = document.getElementById("qrcode");
+
+            new QRCode(qrcode, {
+                text: link,
+                width: refDimension,
+                height: refDimension
+            });
+            qrcode.style.marginTop = (-1 * refDimension/2).toString() + 'px';
+            qrcode.style.marginLeft = (-1 * refDimension/2).toString() + 'px';
+
+            this.setStatus('Share this link: ' + link);
             break;
         case 'error':
             this.setErrorStatus(msg.msg);
             break;
         case 'start':
+            var qrcode = document.getElementById("qrcode");
+            qrcode.style.display = 'none';
+
+            this.b.init();
             this.id = msg.id;
-            this.setStatus('Game started!');
             this.hasTwoPlayers = true;
+            this.setStatus('Game started!');
             console.log('Game started: ' + msg.id);
             break;
         case 'move':
@@ -171,4 +186,6 @@ function main()
     {
         game = new Game(ws);
     }
+
+    //TODO: disconnect the player gracefully when he starts reloading and reconnect him
 }

@@ -16,7 +16,13 @@ canvas {
     display: block;
 }
 
-.status {
+#qrcode {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+#status {
     width: 100%;
     position: fixed;
     bottom: 0;
