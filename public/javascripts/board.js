@@ -136,7 +136,7 @@ Board.prototype.set = function(row, col, playerMark)
     else
     {
         var o = new O(ctx, this.cellW - (this.cellW/10)*2, this.cellH - (this.cellH/10)*2);
-        o.draw(this.cellW/10, this.cellH/10);
+        o.draw(this.cellW/5, this.cellH/5);
     }
     ctx.restore();
 }

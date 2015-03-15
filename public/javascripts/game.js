@@ -60,10 +60,18 @@ Game.prototype.set = function (r, c)
     this.ws.send(JSON.stringify(msg));
 }
 
-Game.prototype.setStatus = function(text)
+Game.prototype.setStatus = function(text, html)
 {
+    html = html || false
     this.statusBar.style.background = null;
-    this.statusBar.textContent = text;
+    if(html)
+    {
+        this.statusBar.innerHTML = text;
+    }
+    else
+    {
+        this.statusBar.textContent = text;
+    }
 }
 
 Game.prototype.setErrorStatus = function(text)
@@ -136,10 +144,11 @@ Game.prototype.onMessage = function(event) {
                 width: refDimension,
                 height: refDimension
             });
+            //center the code both horizontally and vertically
             qrcode.style.marginTop = (-1 * refDimension/2).toString() + 'px';
             qrcode.style.marginLeft = (-1 * refDimension/2).toString() + 'px';
 
-            this.setStatus('Share this link: ' + link);
+            this.setStatus('Share the QR code above or this link:<br>' + link, true);
             break;
         case 'error':
             this.setErrorStatus(msg.msg);
