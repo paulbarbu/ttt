@@ -5,6 +5,8 @@ function Game(ws, gameId)
     this.ws = ws;
     this.id = gameId || null;
 
+    this.opponentTurnText = "Waiting opponent's move!";
+    this.yourTurnText = 'Your turn!';
     this.canvas = document.getElementById('board');
     this.b = new Board(this.canvas, this);
     this.hasTwoPlayers = false;
@@ -48,7 +50,7 @@ Game.prototype.isValid = function (r, c)
 Game.prototype.set = function (r, c)
 {
     this.myTurn = false;
-    this.setStatus("Waiting opponent's move!");
+    this.setStatus(this.opponentTurnText);
     this.board[r][c] = this.mark;
     var msg = {
         action: 'move',
@@ -160,12 +162,18 @@ Game.prototype.onMessage = function(event) {
             this.b.init();
             this.id = msg.id;
             this.hasTwoPlayers = true;
-            this.setStatus('Game started!');
+            var turnText = this.yourTurnText;
+            if(2 == this.mark)
+            {
+                turnText = this.opponentTurnText;
+            }
+
+            this.setStatus('Game started! ' + turnText);
             console.log('Game started: ' + msg.id);
             break;
         case 'move':
             this.myTurn = true;
-            this.setStatus('Your turn!');
+            this.setStatus(this.yourTurnText);
             // move messages are always received from the server on behalf of the other player
             console.log('Move: row=' + msg.r + ' col=' + msg.c);
             var otherMark = this.mark == 1 ? 2 : 1;
