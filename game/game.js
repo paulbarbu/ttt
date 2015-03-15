@@ -21,4 +21,13 @@ Game.prototype.join = function (player2)
     this.p2 = player2;
 }
 
+Game.prototype.start = function(){
+    var msg = JSON.stringify({
+        type: 'start'
+    });
+
+    this.p1.send(msg);
+    this.p2.send(msg);
+};
+
 module.exports = Game;

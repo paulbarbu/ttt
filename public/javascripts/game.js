@@ -1,13 +1,16 @@
 window.onload = main
 
-function Game(ws)
+function Game(ws, gameId)
 {
+    this.ws = ws;
+    this.id = gameId || null;
+
+    this.hasTwoPlayers = false;
     this.board = [[0, 0, 0],
                   [0, 0, 0],
                   [0, 0, 0]];
     this.mark = 1; //1 - x, 2 - o
     this.statusBar = document.getElementById("status");
-    this.ws = ws;
 
     this.ws.onopen = this.start.bind(this);
     this.ws.onmessage = this.onMessage.bind(this);
@@ -44,8 +47,19 @@ Game.prototype.start = function()
         var b = new Board(canvas, this);
         b.init();
 
-        var msg = { action: 'new' };
-        this.ws.send(JSON.stringify(msg));
+        if(this.id)
+        {
+            var msg = {
+                action: 'join',
+                id: parseInt(this.id)
+            };
+            this.ws.send(JSON.stringify(msg));
+        }
+        else
+        {
+            var msg = { action: 'new' };
+            this.ws.send(JSON.stringify(msg));
+        }
     }
     else
     {
@@ -62,11 +76,29 @@ Game.prototype.onMessage = function(event) {
         case 'conn-info':
             this.setStatus('Share this link: ' + window.location + '?join=' + msg['game-id']);
             break;
+        case 'error':
+            this.setErrorStatus(msg.msg);
+            break;
+        case 'start':
+            // TODO: enforce rules
+            this.setStatus("Game started!");
+            this.hasTwoPlayers = true;
+            break;
     }
 };
 
 function main()
 {
-    var ws = new WebSocket(window.location.origin.replace(/^http/, 'ws'));
-    var game = new Game(ws);
+    var q = getQuery(),
+        ws = new WebSocket(window.location.origin.replace(/^http/, 'ws')),
+        game;
+
+    if(q.join)
+    {
+        game = new Game(ws, q.join);
+    }
+    else
+    {
+        game = new Game(ws);
+    }
 }

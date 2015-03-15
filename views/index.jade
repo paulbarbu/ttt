@@ -2,6 +2,7 @@ extends layout
 
 block head
     meta(name="viewport" content="user-scalable=no")
+    script(type='text/javascript' src='/javascripts/helpers.js')
     script(type='text/javascript' src='/javascripts/shape.js')
     script(type='text/javascript' src='/javascripts/x.js')
     script(type='text/javascript' src='/javascripts/o.js')
@@ -11,7 +12,6 @@ block head
 block content
     #content
         div(class="status" id="status")
-            | Bottom bar
 
         canvas(id="board")
             | Your browser is too old, it doesn't support canvas.

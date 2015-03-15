@@ -45,6 +45,11 @@ Board.prototype.coordToCell = function(x, y)
 
 Board.prototype.canvasClicked = function(event)
 {
+    if(!this.game.hasTwoPlayers)
+    {
+        return;
+    }
+
     var x = event.clientX;
     var y = event.clientY;
     console.log("X: " + x +" Y: " + y);

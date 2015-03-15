@@ -20,25 +20,35 @@ function onMessage(socket, data)
             };
 
             socket.send(JSON.stringify(connInfo));
-            debug("New game, id: " + (games.length-1));
+            debug('New game, id: ' + (games.length-1));
             break;
         case 'join':
-            if(msg.id && msg.id >= 0 && msg.id < games.length)
+            if(msg.id !== null && msg.id >= 0 && msg.id < games.length)
             {
                 var g = games[msg.id];
                 if(!g.isFull())
                 {
                     g.join(socket);
-                    debug("Game full, id:" + msg.id)
+                    debug('Game full, id:' + msg.id)
+                    g.start();
                 }
                 else
                 {
-                    //TODO: send error to client saying that the game is already full
+                    var msg = {
+                        type: 'error',
+                        msg: 'The game is already full!'
+                    }
+                    socket.send(JSON.stringify(msg));
                 }
             }
             else
             {
                 console.warn("Invalid id provided: " + msg.id);
+                var msg = {
+                    type: 'error',
+                    msg: 'Invalid game id: ' + msg.id
+                };
+                socket.send(JSON.stringify(msg));
             }
             break;
     }
