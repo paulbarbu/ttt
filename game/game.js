@@ -93,14 +93,14 @@ Game.prototype.getWinner = function()
                 //if the the board is not yet filled by player
                 //markers (id's) and there is no winner then the game
                 //should contine
-                return 0;
+                return [0, null];
             }
         }
     }
 
     //indeed it's a draw because the board is filled by markers but
     //there's no winner
-    return -1;
+    return [-1, null];
 }
 
 Game.prototype.move = function(row, col, playerMark)
@@ -118,23 +118,26 @@ Game.prototype.move = function(row, col, playerMark)
             winner = winnerInfo[0],
             position = winnerInfo[1];
 
+        //TODO: if the game is over then remove it from the list in game manager
+
         switch(winner){
             case -1: //draw
-                var msg = {
+                var msg = JSON.stringify({
                     type: 'end',
-                    winner: -1
-                };
-                this.p1.send(JSON.stringify(msg));
-                this.p2.send(JSON.stringify(msg));
+                    winner: -1,
+                    position: null
+                });
+                this.p1.send(msg);
+                this.p2.send(msg);
                 break;
             case 1: // player 1 wins
-                var msg = {
+                var msg = JSON.stringify({
                     type: 'end',
                     winner: 1,
                     position: position
-                };
-                this.p1.send(JSON.stringify(msg));
-                this.p2.send(JSON.stringify(msg));
+                });
+                this.p1.send(msg);
+                this.p2.send(msg);
                 break;
             case 2: // player 2 wins
                 var msg = {
@@ -142,8 +145,8 @@ Game.prototype.move = function(row, col, playerMark)
                     winner: 2,
                     position: position
                 };
-                this.p1.send(JSON.stringify(msg));
-                this.p2.send(JSON.stringify(msg));
+                this.p1.send(msg);
+                this.p2.send(msg);
                 break;
             default: // game in progress
                 this.switchCurrentPlayer();

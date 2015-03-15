@@ -108,7 +108,7 @@ Game.prototype.start = function()
 
 Game.prototype.end = function(winner, pos)
 {
-    //pos will be defined onyl if we have a winner
+    //pos will be defined only if we have a winner
 
     if(winner == -1)
     {
